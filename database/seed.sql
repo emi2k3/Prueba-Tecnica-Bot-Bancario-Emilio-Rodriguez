@@ -1,8 +1,8 @@
-INSERT INTO Cuenta (nombre_completo, cedula, email, direccion, telefono, pin)
+INSERT INTO Cuenta (nombre_completo, cedula, email, direccion, telefono,saldo, pin)
 VALUES 
-    ('Juan Pérez López', '12345678', 'juan.perez@example.com', 'Calle Falsa 123, Ciudad Ejemplo', '598-1234', crypt('1234', gen_salt('bf'))),
-    ('María González Ruiz', '87654321', 'maria.gonzalez@example.com', 'Avenida Siempre Viva 742, Otra Ciudad', '598-2143', crypt('5678', gen_salt('bf'))),
-    ('Carlos Ramírez Soto', '11223344', 'carlos.ramirez@example.com', 'Boulevard de los Sueños 101, Pueblo Nuevo', '598-4321', crypt('9012', gen_salt('bf')));
+    ('Juan Pérez López', '12345678', 'juan.perez@example.com', 'Calle Falsa 123, Ciudad Ejemplo', '598-1234',20000, crypt('1234', gen_salt('bf'))),
+    ('María González Ruiz', '87654321', 'maria.gonzalez@example.com', 'Avenida Siempre Viva 742, Otra Ciudad', '598-2143', 15000, crypt('5678', gen_salt('bf'))),
+    ('Carlos Ramírez Soto', '11223344', 'carlos.ramirez@example.com', 'Boulevard de los Sueños 101, Pueblo Nuevo','598-4321',40000,  crypt('9012', gen_salt('bf')));
 
 INSERT INTO Interacciones (fecha_hora, tipo, id_cuenta)
 VALUES 
