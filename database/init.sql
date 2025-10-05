@@ -43,19 +43,36 @@ CREATE TABLE IF NOT EXISTS Movimientos(
 
 CREATE TABLE IF NOT EXISTS Prestamo(
     id_prestamo SERIAL PRIMARY KEY,
-    cuota INT NOT NULL,
-    intereses INT NOT NULL,
-    vencido BOOLEAN NOT NULL DEFAULT FALSE,
-    fecha_vencimiento DATE NOT NULL,
+    monto_original INT NOT NULL,
+    tasa_interes DECIMAL(5,2) NOT NULL,
+    cuota_mensual INT NOT NULL,
+    plazo_meses INT NOT NULL,
+    fecha_otorgamiento DATE NOT NULL DEFAULT CURRENT_DATE,
     id_cuenta INT NOT NULL,
     CONSTRAINT fk_cuenta_id
         FOREIGN KEY (id_cuenta)
         REFERENCES Cuenta (id_cuenta)
         ON DELETE CASCADE
-); 
+);
 
-CREATE INDEX idx_cedula ON Cuenta (cedula);
+CREATE TABLE IF NOT EXISTS Cuota_Prestamo(
+    id_cuota SERIAL PRIMARY KEY,
+    id_prestamo INT NOT NULL,
+    numero_cuota INT NOT NULL,
+    monto_cuota INT NOT NULL,
+    fecha_vencimiento DATE NOT NULL,
+    pagada BOOLEAN DEFAULT FALSE,
+    fecha_pago DATE,
+    CONSTRAINT fk_prestamo
+        FOREIGN KEY (id_prestamo)
+        REFERENCES Prestamo (id_prestamo)
+        ON DELETE CASCADE
+);
+
+CREATE INDEX idx_cuota_prestamo ON Cuota_Prestamo (id_prestamo);
+CREATE INDEX idx_pin ON Cuenta (pin);
 CREATE INDEX idx_interacciones ON Interacciones (id_cuenta);
 CREATE INDEX idx_movimientos ON Movimientos (id_cuenta);
 CREATE INDEX idx_prestamo ON Prestamo (id_cuenta);
+
 

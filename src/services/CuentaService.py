@@ -6,8 +6,8 @@ from repositories.CuentaRepository import CuentaRepository
 class CuentaService:
     def __init__(self) -> None:
         pass
-    def consultarSaldo(self, numtelefono: str) -> int:
-        saldo = CuentaRepository().consultarSaldo(numtelefono)
+    def consultarSaldo(self, pin: str) -> int:
+        saldo = CuentaRepository().consultarSaldo(pin)
         return saldo
     def LogIn(self, pin:str)->bool:
         valido = pin.isdigit()

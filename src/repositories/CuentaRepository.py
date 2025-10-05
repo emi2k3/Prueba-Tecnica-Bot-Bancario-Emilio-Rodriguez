@@ -7,25 +7,30 @@ class CuentaRepository:
         pass
     #Conseguir del usuario que esta autenticado un id
     def consultarSaldo(self, pin:str)->int:
-
         conexion = getConnection();
         cur = conexion.cursor()
-        cur.execute('SELECT saldo from usuario WHERE ')
+        cur.execute("""
+        SELECT saldo FROM Cuenta
+        WHERE pin=crypt(%s,pin);""", 
+            (pin,))
         try:
-            saldo = cur.fetchone()[0]
-            if saldo is not None:
-                return saldo
+            resultado = cur.fetchone()
+            if resultado is not None:
+                return resultado
             else:
-                raise RuntimeError("Hubo un error al solicitar el saldo")
+                return None
+        except Exception as e:
+            print(e)
+            return None
         finally:
             cur.close()
             returnConnection(conexion)
-    
+
     def LogIn(self, pin:str)->bool:
         conexion = getConnection();
         cur = conexion.cursor()
         cur.execute("""
-        SELECT * FROM Cuenta 
+        SELECT * FROM Cuenta
         WHERE pin=crypt(%s,pin);""", 
             (pin,))
         try:
@@ -37,3 +42,5 @@ class CuentaRepository:
         finally:
             cur.close()
             returnConnection(conexion)
+
+            
