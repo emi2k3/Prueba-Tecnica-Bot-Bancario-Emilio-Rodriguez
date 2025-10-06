@@ -1,7 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS citext;
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
---Veo después si queda muy dificil saber cual es el tipo de consulta o si los datos no sirven
 CREATE TYPE tipo_enum AS ENUM ('Consulta', 'Movimiento', 'Prestamo');
 
 CREATE TABLE IF NOT EXISTS Cuenta(
@@ -76,3 +75,31 @@ CREATE INDEX idx_movimientos ON Movimientos (id_cuenta);
 CREATE INDEX idx_prestamo ON Prestamo (id_cuenta);
 
 
+CREATE OR REPLACE FUNCTION insertCuotas(
+    p_id_prestamo INT,
+    p_monto_cuota NUMERIC,
+    p_plazo_meses INT,
+    p_fecha_inicio DATE
+) 
+RETURNS void
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    counter INT;
+BEGIN
+    FOR counter IN 1..p_plazo_meses LOOP
+        INSERT INTO Cuota_Prestamo(
+            id_prestamo,
+            numero_cuota,
+            monto_cuota,
+            fecha_vencimiento
+        )
+        VALUES(
+            p_id_prestamo,
+            counter,
+            p_monto_cuota,
+            p_fecha_inicio + (counter - 1) * INTERVAL '1 month'
+        );
+    END LOOP;
+END;
+$$;

@@ -1,44 +1,52 @@
-from psycopg2.extensions import cursor
+from sys import excepthook
 from database.database import getConnection, returnConnection
-
+from .InteraccionesRepository import InteraccionesRepository
 class CuentaRepository:
 
     def __init__(self) -> None:
         pass
-    #Conseguir del usuario que esta autenticado un id
     def consultarSaldo(self, pin:str)->int:
+        """Consigue el saldo del usuario por su pin."""
+
         conexion = getConnection();
         cur = conexion.cursor()
-        cur.execute("""
+        try:
+            cur.execute("""
         SELECT saldo FROM Cuenta
         WHERE pin=crypt(%s,pin);""", 
             (pin,))
-        try:
+     
             resultado = cur.fetchone()
             if resultado is not None:
+                InteraccionesRepository().registrarInteraccion(pin,"Consulta")
                 return resultado
             else:
-                return None
+                return 0
         except Exception as e:
-            print(e)
-            return None
+            return e
         finally:
             cur.close()
             returnConnection(conexion)
 
     def LogIn(self, pin:str)->bool:
+        """Inicia sesión del usuario buscandolo en la BD por su pin."""
+        
         conexion = getConnection();
         cur = conexion.cursor()
-        cur.execute("""
+        try:
+            cur.execute("""
         SELECT * FROM Cuenta
         WHERE pin=crypt(%s,pin);""", 
             (pin,))
-        try:
+      
             resultado = cur.fetchone()
             if resultado is not None:
+                InteraccionesRepository().registrarInteraccion(pin,"Consulta")
                 return True
             else:
                 return False
+        except Exception as e:
+            return e
         finally:
             cur.close()
             returnConnection(conexion)

@@ -1,0 +1,4 @@
+python-dotenv==1.0.1
+mistralai==1.9.11
+psycopg2-binary==2.9.9
+
