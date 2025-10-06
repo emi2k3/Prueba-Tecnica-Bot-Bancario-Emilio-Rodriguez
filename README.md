@@ -41,6 +41,7 @@ Dos préstamos pendientes (no puede solicitar más)
 
 **María González Ruiz**
 PIN:`5678`
+
 Un préstamo pendiente con cuota vencida (penalización por mora)
 
 **Carlos Ramírez Soto**  
