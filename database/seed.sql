@@ -80,3 +80,22 @@ VALUES
 (3, 23, 2529, '2026-08-01', FALSE, NULL),
 (3, 24, 2529, '2026-09-01', FALSE, NULL);
 
+-- Movimientos
+
+INSERT INTO Movimientos (importe, concepto, fecha_operacion, saldo_restante, id_cuenta)
+VALUES
+    (-5284, 'Pago cuota préstamo #1', '2025-10-04', 89716, 1),
+    (-2150, 'Pago cuota préstamo #2', '2025-10-04', 87566, 1),
+    (7434, 'Bono por desempeño', '2025-10-05', 95000, 1);
+
+INSERT INTO Movimientos (importe, concepto, fecha_operacion, saldo_restante, id_cuenta)
+VALUES
+    (-8000, 'Pago servicios', '2025-10-03', 40000, 2),
+    (-5000, 'Retiro ATM', '2025-10-04', 35000, 2),
+    (13000, 'Freelance', '2025-10-05', 48000, 2);
+
+INSERT INTO Movimientos (importe, concepto, fecha_operacion, saldo_restante, id_cuenta)
+VALUES
+    (-15000, 'Compra electrodoméstico', '2025-10-02', 105000, 3),
+    (-10000, 'Inversión plazo fijo', '2025-10-03', 95000, 3),
+    (25000, 'Vencimiento inversión', '2025-10-04', 120000, 3);

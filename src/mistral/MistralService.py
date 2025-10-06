@@ -42,7 +42,7 @@ class MistralService:
             prestamo = next((p for p in prestamos if p["fecha_otorgamiento"] == fecha_prestamo), None)
             if not prestamo:
                 return {"mensaje": "No se encontró un préstamo con esa fecha o ya está pagado."}
-            return prestamo_service.consultarCuotasdeUnPrestamo(prestamo["id_prestamo"])   
+            return prestamo_service.consultarCuotasdeUnPrestamo(prestamo["id_prestamo"],pin)   
 
         def interesTotal(monto:int,cuotas:int,pin):
             return prestamo_service.interesTotal(monto,cuotas,pin)  
@@ -93,7 +93,7 @@ class MistralService:
         "type": "function",
         "function": {
             "name": "consultarPrestamos",
-            "description": "Obtiene todos los préstamos pendientes del usuario. Llama esta tool cuando el usuario pregunte por sus préstamos, préstamos pendientes, o quiera ver qué préstamos tiene. No requiere parámetros, ya que usa el contexto interno (PIN). No muestres 'id_prestamo'. Después de recibir datos, lista los préstamos de forma clara (por ejemplo, monto, fecha de otorgamiento) en español y termina preguntando: '¿Quieres ver las cuotas de algún préstamo específico? Indícame la fecha.'",
+            "description": "Obtiene todos los préstamos pendientes del usuario. ESTA TOOL DEBE SER LLAMADA cada vez que el usuario mencione préstamos. El modelo no debe inventar información sobre préstamos ni fechas. Si la tool devuelve [] (vacío), responde: 'No tienes préstamos pendientes en este momento.' No muestres ids internos. Termina preguntando: '¿Quieres ver las cuotas de algún préstamo específico? Indícame la fecha.",
             "parameters": {
                 "type": "object",
                 "properties": {},
@@ -179,7 +179,7 @@ class MistralService:
         "type": "function",
         "function": {
             "name": "plazofijo",
-            "description": "Obtiene true si al cliente le conviene tener un plazo fijo con el monto y los días ingresados. Informa el resultado y pregunta '¿Qué más necesitas?'.",
+            "description": "Calcula si al cliente le conviene hacer un plazo fijo con el monto y los días ingresados. Llama esta tool cuando el usuario diga 'quiero hacer un plazo fijo', 'plazo fijo de X días' o algo similar. Si el usuario da un plazo fuera del rango 181–1096 días, respóndele que los únicos plazos disponibles son entre 181–1096 días, sin llamar la tool. Si el resultado es positivo, explica brevemente el rendimiento y pregunta '¿Qué más necesitas?'. Si no conviene, indícalo también y pregunta lo mismo.",
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -189,10 +189,10 @@ class MistralService:
                     },
                     "monto": {
                         "type": "number",
-                        "description": "El monto que el usuario va a ingresar para el plazo fijo, si no da un monto insistir a que de uno. El mínimo es 5000. NO PERMITIR VALORES FUERA DE RANGO"
+                        "description": "El monto que el usuario va a ingresar para el plazo fijo, si no da un monto insistir a que de uno. El monto mínimo es de 5000. NO PERMITIR VALORES FUERA DE RANGO"
                     }
                 },
-                "required": ["cuotas","monto"]
+                "required": ["dias","monto"]
             }
         }
     }
@@ -215,6 +215,7 @@ Instrucciones clave:
 - Distingue claramente: Si el usuario menciona 'préstamos', 'préstamos pendientes' o similar sin especificar 'pedir' o 'solicitar', asume que quiere consultar sus préstamos actuales y llama automáticamente 'consultarPrestamos'. Solo si dice explícitamente 'quiero pedir un préstamo' o similar, procede con 'interesTotal' o 'pedirPrestamo'.
 - Si menciona 'movimientos' sin especificar, pregunta: '¿Quieres ver tus últimos movimientos? Confírmame para consultar.' Y no agregues nada más en esa respuesta.
 - Para consultas de préstamos, llama automáticamente la función consultarPrestamos para mostrar sus préstamos actuales. Termina con: '¿Quieres ver las cuotas de algún préstamo específico? Indícame la fecha.'
+Si el usuario menciona "préstamo", "préstamos", "préstamos pendientes", "tengo préstamos" o cualquier variación, **NO** respondas nada sobre préstamos sin antes llamar a la tool consultarPrestamos. Siempre llama consultarPrestamos y usa únicamente los datos que esa tool devuelva. No inventes préstamos ni fechas. Si la tool devuelve lista vacía, responde exactamente: "No tienes préstamos pendientes en este momento."
 - Para pedir un préstamo nuevo, confirma primero monto y cuotas, menciona siempre los rangos completos: mínimo monto 10000 pesos, máximo 500000 pesos; mínimo cuotas 2, máximo 36. Si los valores están fuera, insiste sin procesar.
 - Después de entregar datos de una tool (excepto consultarPrestamos), resume brevemente si es necesario y siempre termina preguntando: '¿Qué más necesitas?'
 - Si no hay datos (e.g., no hay préstamos), informa amigablemente: 'No tienes préstamos pendientes en este momento.' Sin llamar tools innecesarias.
@@ -233,7 +234,7 @@ De 2 a 6 cuotas la tasa anual es del 27%
 De 7 a 12 cuotas la tasa anual es del 30%
 De 13 a 24 cuotas la tasa anual es del 31%
 De 25 a 36 cuotas la tasa anual es del 32%
-Para los plazos fijos entre:
+Si el usuario pide un plazo fijo con una cantidad de días fuera del rango permitido (181 a 1096), respóndele: 'Actualmente solo ofrecemos plazos fijos entre 181 y 1096  días.' y no llames ninguna tool. El monto mínimo es de 5000. NO PERMITIR VALORES FUERA DE RANGO
 IMPORTANTE: Los usuarios morosos (con cuotas vencidas) pueden obtener préstamos pero con tasas de interés más altas (+15% adicional). Siempre informa esto al usuario moroso antes de procesar su solicitud. Ten en cuenta que la tasa máxima de interés es 45%.
 Instrucciones adicionales para formateo:
 - Siempre usa texto plano en las respuestas. NO uses Markdown como **negrita**, *cursiva*, ni listas con asteriscos (*) a menos que sea para tablas (usa | para columnas).
