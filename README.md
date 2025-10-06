@@ -35,18 +35,11 @@
 
 ## Usuarios de Prueba
 
-**Juan Pérez López**  
-PIN:`1234`
-Dos préstamos pendientes (no puede solicitar más)
-
-**María González Ruiz**
-PIN:`5678`
-
-Un préstamo pendiente con cuota vencida (penalización por mora)
-
-**Carlos Ramírez Soto**  
-PIN:`9012`
-Sin préstamos pendientes
+| Nombre              |    PIN | Comentarios                                                     |
+| ------------------- | -----: | --------------------------------------------------------------- |
+| Juan Pérez López    | `1234` | Dos préstamos pendientes (no puede solicitar más)               |
+| María González Ruiz | `5678` | Un préstamo pendiente con cuota vencida (penalización por mora) |
+| Carlos Ramírez Soto | `9012` | Sin préstamos pendientes                                        |
 
 ---
 
